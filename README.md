@@ -2318,3 +2318,184 @@ public:
 };
 ```
 
+## 栈
+
+#### [150. 逆波兰表达式求值](https://leetcode-cn.com/problems/evaluate-reverse-polish-notation/)
+
+难度中等362收藏分享切换为英文接收动态反馈
+
+根据[ 逆波兰表示法](https://baike.baidu.com/item/逆波兰式/128437)，求表达式的值。
+
+有效的算符包括 `+`、`-`、`*`、`/` 。每个运算对象可以是整数，也可以是另一个逆波兰表达式。
+
+**说明：**
+
+- 整数除法只保留整数部分。
+- 给定逆波兰表达式总是有效的。换句话说，表达式总会得出有效数值且不存在除数为 0 的情况。
+
+**示例 1：**
+
+```
+输入：tokens = ["2","1","+","3","*"]
+输出：9
+解释：该算式转化为常见的中缀算术表达式为：((2 + 1) * 3) = 9
+```
+
+**示例 2：**
+
+```
+输入：tokens = ["4","13","5","/","+"]
+输出：6
+解释：该算式转化为常见的中缀算术表达式为：(4 + (13 / 5)) = 6
+```
+
+```Java
+class Solution {
+    public int evalRPN(String[] tokens) {
+        Stack<Integer> stack = new Stack<Integer>();
+        int n = tokens.length;
+        for (int i = 0; i < n; i++) {
+            String token = tokens[i];
+            if (isNumber(token)) {
+                stack.push(Integer.parseInt(token));
+            } else {
+                int num2 = stack.pop();
+                int num1 = stack.pop();
+                switch (token) {
+                    case "+":
+                        stack.push(num1 + num2);
+                        break;
+                    case "-":
+                        stack.push(num1 - num2);
+                        break;
+                    case "*":
+                        stack.push(num1 * num2);
+                        break;
+                    case "/":
+                        stack.push(num1 / num2);
+                        break;
+                    default:
+                }
+            }
+        }
+        return stack.pop();
+    }
+	// 判断字符串是不是数字
+    public boolean isNumber(String token) {
+        return !("+".equals(token) || "-".equals(token) || "*".equals(token) || "/".equals(token));
+    }
+}
+```
+
+#### [227. 基本计算器 II](https://leetcode-cn.com/problems/basic-calculator-ii/)
+
+难度中等410收藏分享切换为英文接收动态反馈
+
+给你一个字符串表达式 `s` ，请你实现一个基本计算器来计算并返回它的值。
+
+整数除法仅保留整数部分。
+
+**示例 1：**
+
+```
+输入：s = "3+2*2"
+输出：7
+```
+
+**示例 2：**
+
+```
+输入：s = " 3/2 "
+输出：1
+```
+
+**示例 3：**
+
+```
+输入：s = " 3+5 / 2 "
+输出：5
+```
+
+```Cpp
+class Solution {
+public:
+    int calculate(string s) {
+        int n = s.length();
+        stack<int> stk;
+        char sign = '+';
+        long num = 0;
+        long ans = 0;
+        int i = 0;
+        while (i < n){
+            if (s[i] == ' ') i ++;
+            else if (s[i] == '+' || s[i] == '-' || s[i] == '*' || s[i] == '/') {
+                sign = s[i];
+                i ++;
+            }
+            else {
+                while (i < n && s[i] >= '0' && s[i] <= '9'){
+                    num = num * 10 + s[i] - '0';
+                    i ++;
+                }
+                if (sign == '-') {
+                    num = - num;
+                }
+                else if (sign == '*') {
+                    num = num * stk.top();
+                    stk.pop();
+                }
+                else if (sign == '/') {
+                    num = stk.top() / num;
+                    stk.pop();
+                }
+                stk.push(num);
+                num = 0;
+            }
+            
+        }
+
+        while (!stk.empty()) {
+            ans += stk.top();
+            stk.pop();
+        }
+
+        return ans;
+    }
+};
+
+```
+
+==尝试Java==
+
+#### [394. 字符串解码](https://leetcode-cn.com/problems/decode-string/)
+
+难度中等791收藏分享切换为英文接收动态反馈
+
+给定一个经过编码的字符串，返回它解码后的字符串。
+
+编码规则为: `k[encoded_string]`，表示其中方括号内部的 *encoded_string* 正好重复 *k* 次。注意 *k* 保证为正整数。
+
+你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+
+此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 *k* ，例如不会出现像 `3a` 或 `2[4]` 的输入。
+
+**示例 1：**
+
+```
+输入：s = "3[a]2[bc]"
+输出："aaabcbc"
+```
+
+**示例 2：**
+
+```
+输入：s = "3[a2[c]]"
+输出："accaccacc"
+```
+
+**示例 3：**
+
+```
+输入：s = "2[abc]3[cd]ef"
+输出："abcabccdcdcdef"
+```
