@@ -1,25 +1,29 @@
 - [字符串](#字符串)
     - [3. 无重复字符的最长子串](#3-无重复字符的最长子串)
     - [5. 最长回文子串](#5-最长回文子串)
-    - [20. 有效的括号](#20-有效的括号-1)
+    - [20. 有效的括号](#20-有效的括号)
     - [49. 字母异位词分组](#49-字母异位词分组)
     - [647. 回文子串](#647-回文子串)
-    - [856. 括号的分数](#856-括号的分数)
     - [1249. 移除无效的括号](#1249-移除无效的括号)
     - [面试题 01.06. 字符串压缩](#面试题-0106-字符串压缩)
-    - [1544. 整理字符串](#1544-整理字符串-1)
+    - [1544. 整理字符串](#1544-整理字符串)
     - [面试题 08.09. 括号](#面试题-0809-括号)
 - [深度优先](#深度优先)
+  - [**<u>E</u>**](#ueu)
     - [104. 二叉树的最大深度](#104-二叉树的最大深度)
     - [101. 对称二叉树](#101-对称二叉树)
+  - [**<u>M</u>**](#umu)
+    - [114. 二叉树展开为链表](#114-二叉树展开为链表)
+    - [199. 二叉树的右视图](#199-二叉树的右视图)
+    - [207. 课程表](#207-课程表)
 - [数组](#数组)
-  - [<u>简单难度</u>](#u简单难度u)
+  - [E](#e)
     - [53. 最大子序和](#53-最大子序和)
     - [121. 买卖股票的最佳时机](#121-买卖股票的最佳时机)
     - [169. 多数元素](#169-多数元素)
     - [268. 丢失的数字](#268-丢失的数字)
     - [283. 移动零](#283-移动零)
-  - [<u>中等难度</u>](#u中等难度u)
+  - [<u>M</u>](#umu-1)
     - [11. 盛最多水的容器](#11-盛最多水的容器)
     - [15. 三数之和](#15-三数之和)
     - [31. 下一个排列](#31-下一个排列)
@@ -35,463 +39,15 @@
     - [216. 组合总和 III](#216-组合总和-iii)
     - [287. 寻找重复数](#287-寻找重复数)
     - [238. 除自身以外数组的乘积](#238-除自身以外数组的乘积)
-
-#### [剑指 Offer 04. 二维数组中的查找](https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)
-
-难度中等341
-
-在一个 n * m 的二维数组中，<u>每一行</u>都按照<u>从左到右递增</u>的顺序排序，<u>每一列</u>都按照<u>从上到下递增</u>的顺序排序。请完成一个高效的函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。
-
-**示例:**
-
-现有矩阵 matrix 如下：
-
-```
-[
-  [1,   4,  7, 11, 15],
-  [2,   5,  8, 12, 19],
-  [3,   6,  9, 16, 22],
-  [10, 13, 14, 17, 24],
-  [18, 21, 23, 26, 30]
-]
-```
-
-给定 target = `5`，返回 `true`。
-
-给定 target = `20`，返回 `false`。
-
-```cpp
-/**
- * 思路：二分的思想：可以从左下角（题解就是）开始比较，也可以从右上角开始比较。但一定不能从左上角和右下角
- *     进行比较，因为这两个位置，无论怎么移动，一定是比当前位置大/小的位置。这样一来，就达不到二分的两种
- *     情况的走法了。
-*/
-class Solution {
-public:
-    bool findNumberIn2DArray(vector<vector<int>>& matrix, int target) {
-        int i = matrix.size() - 1;   // 最后一行
-        int j = 0;                   // 第一列
-        while(i >= 0 && j < matrix[0].size())  // 遍历矩阵
-        {
-             // 最后一行第一列
-            if(matrix[i][j] > target) i--;      // 目标值较小，则往前看一行
-           	else if(matrix[i][j] < target) j++; // 目标值较大，则当前行往后看一列
-            else return true;                   // 目标值等于矩阵中的某个值
-        }
-        return false;
-    }
-};
-```
-
-#### [剑指 Offer 12. 矩阵中的路径](https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/)
-
-难度中等330
-
-给定一个 `m x n` 二维字符网格 `board` 和一个字符串单词 `word` 。如果 `word` 存在于网格中，返回 `true` ；否则，返回 `false` 。
-
-单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
-
-例如，在下面的 3×4 的矩阵中包含单词 "ABCCED"（单词中的字母已标出）。
-
-<img src="../gitbook/markdownImages/word2-1624273081056.jpg" alt="word2" style="zoom:50%;" />
-
-**示例 1：**
-
-```
-输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
-输出：true
-```
-
-**示例 2：**
-
-```
-输入：board = [["a","b"],["c","d"]], word = "abcd"
-输出：false
-```
-
-```cpp
-/**
- * 思路：回溯的思想。从矩阵中的每一个位置出发，（利用回测算法）尝试当前位置向四周走动，最终是否能够完全
- *      走完整个word，如果可以，则exist。如果走到某一步不能，则进行回溯，尝试走其他的路线。
- *
-*/
-class Solution {
-public:
-    bool exist(vector<vector<char>>& board, string word) {
-        int rows = board.size();
-        int  cols = board[0].size();
-        // 遍历矩阵每个位置
-        for(int i = 0; i < rows; i++) {
-            for(int j = 0; j < cols; j++) {
-                if(DFS(board, word, i, j, 0)) 
-                    return true;
-            }
-        }
-        return false;
-    }
-    
-    // x:当前位置x坐标  y:当前位置y坐标   k:当前word[k]
-    bool DFS(vector<vector<char>>& board,string word,int x,int y,int k) 
-    {
-        int rows = board.size();
-        int cols = board[0].size();
-        // 边界条件:超出网格或者当前字符不匹配
-        if(x >= rows || x < 0 || y >= cols || y < 0 || board[x][y] != word[k]) 
-            return false;
-        board[x][y] = '\0';     // 进行访问，标记已经访问过
-        if(k == word.size()-1)
-            return true;
-        // 深度优先搜索
-        bool res =  (DFS(board,word,x-1,y,k+1)||
-                    DFS(board,word,x+1,y,k+1)||
-                    DFS(board,word,x,y-1,k+1)||
-                    DFS(board,word,x,y+1,k+1));
-        // 回溯
-        board[x][y] = word[k];
-        return res;
-    }
-};
-```
-
-#### [剑指 Offer 34. 二叉树中和为某一值的路径](https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/)
-
-难度中等183
-
-输入一棵二叉树和一个整数，打印出二叉树中节点值的和为输入整数的所有路径。从树的<u>根节点开始</u>往下一直到<u>叶节点</u>所经过的节点形成一条路径。
-
-**示例:**
-给定如下二叉树，以及目标和 `target = 22`，
-
-```
-              5
-             / \
-            4   8
-           /   / \
-          11  13  4
-         /  \    / \
-        7    2  5   1
-```
-
-返回:
-
-```
-[
-   [5,4,11,2],
-   [5,8,4,5]
-]
-```
-
-```cpp
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
- *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
- * };
- */
-/**
- * 思想：回溯。
- * 定义一个全局的ans和path
- * 从根节点开始，向下先进行深度搜索，如果和为target，则添加路径。如果在搜索的过程中，发现不满足，则回溯
- */
-class Solution {
-public:
-    vector<vector<int>> ans;  // 满足条件的所有路径
-    vector<int> path;         // 满足条件的一条路径
-    // 回溯：深度优先搜索
-    vector<vector<int>> pathSum(TreeNode* root, int target) {
-        DFS(root,target);
-        return ans;
-    }
-    void DFS(TreeNode *root,int target)
-    {
-        // 边界条件
-        if(!root)
-            return;
-        path.push_back(root->val);
-        target = target - root->val;
-        // 满足条件并且是到达叶子节点
-        if(target==0 && !root->left && !root->right)  
-            ans.push_back(path);
-        // 深度搜索：因为这个是树，所以深度搜索的时候是向左右孩子
-        DFS(root->left,target);
-        DFS(root->right,target);
-        // 回溯 ，弹出不满足的路径
-        path.pop_back();  
-    }
-};
-```
-
-#### [322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
-
-难度中等1294
-
-给定不同面额的硬币 `coins` 和一个总金额 `amount`。编写一个函数来计算可以凑成总金额所需的最少的硬币个数。如果没有任何一种硬币组合能组成总金额，返回 `-1`。
-
-你可以认为每种硬币的数量是无限的。
-
-**示例 1：**
-
-```
-输入：coins = [1, 2, 5], amount = 11
-输出：3 
-解释：11 = 5 + 5 + 1
-```
-
-**示例 2：**
-
-```
-输入：coins = [2], amount = 3
-输出：-1
-```
-
-**示例 3：**
-
-```
-输入：coins = [1], amount = 0
-输出：0
-```
-
-**示例 4：**
-
-```
-输入：coins = [1], amount = 1
-输出：1
-```
-
-**示例 5：**
-
-```
-输入：coins = [1], amount = 2
-输出：2
-```
-
- ```cpp
- /**
-  * 思想：动态规划。
-  *
-  */
- class Solution {
- public:
-     int coinChange(vector<int>& coins, int amount){
- 	int n = coins.size();
- 	int *dp = (int *)malloc(sizeof(int)*(amount+1));
-     // 初始化dp数组
- 	for(int i=0;i<=amount;i++)
- 		dp[i] = INT_MAX;
-     // 边界条件，相当于不用找零钱
- 	dp[0] = 0;	
- 	for(int i=1;i<=amount;i++)	// 遍历dp数组
- 		for(int j=0;j<n;j++){   // 遍历零钱
-             // 如果零钱没找够（或者说还能再找）   且  之前的零钱已经找过
- 			if(i-coins[j] >= 0 && dp[i-coins[j]]!=INT_MAX) 
- 				dp[i] = min(dp[i-coins[j]]+1,dp[i]);
- 		}
-     // 如果
- 	if(dp[amount]==INT_MAX)
- 		return -1;
- 	return dp[amount];
- 	}
- };
- ```
-
-#### [416. 分割等和子集](https://leetcode-cn.com/problems/partition-equal-subset-sum/)
-
-难度中等813
-
-给你一个 **只包含正整数** 的 **非空** 数组 `nums` 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
-
-**示例 1：**
-
-```
-输入：nums = [1,5,11,5]
-输出：true
-解释：数组可以分割成 [1, 5, 5] 和 [11] 。
-```
-
-**示例 2：**
-
-```
-输入：nums = [1,2,3,5]
-输出：false
-解释：数组不能分割成两个元素和相等的子集。
-```
-
-```cpp
-class Solution {
-    public boolean canPartition(int[] nums) {
-        int n = nums.length;
-        //「等和子集」的和必然是总和的一半
-        int sum = 0;
-        for (int i : nums) sum += i;
-        int target = sum / 2;      
-        // 对应了总和为奇数的情况，注定不能被分为两个「等和子集」
-        if (target * 2 != sum) return false;
-        int[][] f = new int[n][target + 1];
-        // 先处理考虑第 1 件物品的情况
-        for (int j = 0; j <= target; j++) {
-            f[0][j] = j >= nums[0] ? nums[0] : 0;
-        }
-        // 再处理考虑其余物品的情况
-        for (int i = 1; i < n; i++) {
-            int t = nums[i];
-            for (int j = 0; j <= target; j++) {
-                // 不选第 i 件物品
-                int no = f[i-1][j];
-                // 选第 i 件物品
-                int yes = j >= t ? f[i-1][j-t] + t : 0;
-                f[i][j] = Math.max(no, yes);
-            }
-        }
-        // 如果最大价值等于 target，说明可以拆分成两个「等和子集」
-        return f[n-1][target] == target;
-    }
-}
-```
-
-#### [234. 回文链表](https://leetcode-cn.com/problems/palindrome-linked-list/)
-
-难度简单1020收藏分享切换为英文接收动态反馈
-
-请判断一个链表是否为回文链表。
-
-**示例 1:**
-
-```
-输入: 1->2
-输出: false
-```
-
-**示例 2:**
-
-```
-输入: 1->2->2->1
-输出: true
-```
-
-#### [1544. 整理字符串](https://leetcode-cn.com/problems/make-the-string-great/)
-
-难度简单27收藏分享切换为英文接收动态反馈
-
-给你一个由大小写英文字母组成的字符串 `s` 。
-
-一个整理好的字符串中，两个相邻字符 `s[i]` 和 `s[i+1]`，其中 `0<= i <= s.length-2` ，要满足如下条件:
-
-- 若 `s[i]` 是小写字符，则 `s[i+1]` 不可以是相同的大写字符。
-- 若 `s[i]` 是大写字符，则 `s[i+1]` 不可以是相同的小写字符。
-
-请你将字符串整理好，每次你都可以从字符串中选出满足上述条件的 **两个相邻** 字符并删除，直到字符串整理好为止。
-
-请返回整理好的 **字符串** 。题目保证在给出的约束条件下，测试样例对应的答案是唯一的。
-
-**注意：**空字符串也属于整理好的字符串，尽管其中没有任何字符。
-
-**示例 1：**
-
-```
-输入：s = "leEeetcode"
-输出："leetcode"
-解释：无论你第一次选的是 i = 1 还是 i = 2，都会使 "leEeetcode" 缩减为 "leetcode" 。
-```
-
-**示例 2：**
-
-```
-输入：s = "abBAcC"
-输出：""
-解释：存在多种不同情况，但所有的情况都会导致相同的结果。例如：
-"abBAcC" --> "aAcC" --> "cC" --> ""
-"abBAcC" --> "abBA" --> "aA" --> ""
-```
-
-**示例 3：**
-
-```
-输入：s = "s"
-输出："s"
-```
-
-```Java
-import java.util.Stack;
-class Solution {
-    public String makeGood(String s) {
-        int n = s.length();
-        Stack<Character> stack = new Stack<>();
-        for (int i=0;i<n;i++) {         
-            if (!stack.isEmpty()) {
-                if (Math.abs(s.charAt(i) - stack.peek()) == 32) {
-                    stack.pop();
-                } else {
-                    stack.push(s.charAt(i));
-                }
-            } else {
-                stack.push(s.charAt(i));
-            }
-        }
-        StringBuffer sb = new StringBuffer();
-        while (!stack.isEmpty()) {
-            sb.insert(0, stack.pop());
-        }
-        return sb.toString();
-    }
-}
-```
-
-#### [20. 有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
-
-难度简单2456收藏分享切换为英文接收动态反馈
-
-给定一个只包括 `'('`，`')'`，`'{'`，`'}'`，`'['`，`']'` 的字符串 `s` ，判断字符串是否有效。
-
-有效字符串需满足：
-
-1. 左括号必须用相同类型的右括号闭合。
-2. 左括号必须以正确的顺序闭合。
-
- 
-
-**示例 1：**
-
-```
-输入：s = "()"
-输出：true
-```
-
-**示例 2：**
-
-```
-输入：s = "()[]{}"
-输出：true
-```
-
-**示例 3：**
-
-```
-输入：s = "(]"
-输出：false
-```
-
-**示例 4：**
-
-```
-输入：s = "([)]"
-输出：false
-```
-
-**示例 5：**
-
-```
-输入：s = "{[]}"
-输出：true
-```
-
----
-
----
+- [栈](#栈)
+  - [**<u>E</u>**](#ueu-1)
+    - [155. 最小栈](#155-最小栈)
+  - [**<u>M</u>**](#umu-2)
+    - [150. 逆波兰表达式求值](#150-逆波兰表达式求值)
+    - [227. 基本计算器 II](#227-基本计算器-ii)
+    - [394. 字符串解码](#394-字符串解码)
+    - [856. 括号的分数](#856-括号的分数)
+    - [739. 每日温度](#739-每日温度)
 
 ## 字符串
 
@@ -784,44 +340,6 @@ class Solution {
 }
 ```
 
-#### [856. 括号的分数](https://leetcode-cn.com/problems/score-of-parentheses/)
-
-难度中等217收藏分享切换为英文接收动态反馈
-
-给定一个平衡括号字符串 `S`，按下述规则计算该字符串的分数：
-
-- `()` 得 1 分。
-- `AB` 得 `A + B` 分，其中 A 和 B 是平衡括号字符串。
-- `(A)` 得 `2 * A` 分，其中 A 是平衡括号字符串。
-
-**示例 1：**
-
-```
-输入： "()"
-输出： 1
-```
-
-**示例 2：**
-
-```
-输入： "(())"
-输出： 2
-```
-
-**示例 3：**
-
-```
-输入： "()()"
-输出： 2
-```
-
-**示例 4：**
-
-```
-输入： "(()(()))"
-输出： 6
-```
-
 #### [1249. 移除无效的括号](https://leetcode-cn.com/problems/minimum-remove-to-make-valid-parentheses/)
 
 难度中等114收藏分享切换为英文接收动态反馈
@@ -1044,6 +562,8 @@ class Solution {
 
 ## 深度优先
 
+### **<u>E</u>**
+
 #### [104. 二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
 
 难度简单902收藏分享切换为英文接收动态反馈
@@ -1216,9 +736,140 @@ class Solution {
 }
 ```
 
+### **<u>M</u>**
+
+#### [114. 二叉树展开为链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
+
+难度中等827收藏分享切换为英文接收动态反馈
+
+给你二叉树的根结点 `root` ，请你将它展开为一个单链表：
+
+- 展开后的单链表应该同样使用 `TreeNode` ，其中 `right` 子指针指向链表中下一个结点，而左子指针始终为 `null` 。
+- 展开后的单链表应该与二叉树 [**先序遍历**](https://baike.baidu.com/item/先序遍历/6442839?fr=aladdin) 顺序相同。
+
+**示例 1：**
+
+<img src="markdownImages/flaten.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：root = [1,2,5,3,4,null,6]
+输出：[1,null,2,null,3,null,4,null,5,null,6]
+```
+
+**示例 2：**
+
+```
+输入：root = []
+输出：[]
+```
+
+**示例 3：**
+
+```
+输入：root = [0]
+输出：[0]
+```
+
+```Java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public void flatten(TreeNode root) { 
+    if (root == null){
+        return;
+    }
+    Stack<TreeNode> s = new Stack<TreeNode>();
+    s.push(root);                 // 根节点入栈
+    TreeNode pre = null;
+    while (!s.isEmpty()) {
+        TreeNode temp = s.pop();  // 栈顶出栈
+        /***********深度优先遍历 修改的地方*************/
+        if(pre!=null){
+            pre.right = temp;
+            pre.left = null;
+        }
+        /********************************/
+        if (temp.right != null){
+            s.push(temp.right);
+        }
+        if (temp.left != null){
+            s.push(temp.left);
+        } 
+        /***********修改的地方*************/
+        pre = temp;
+        /********************************/
+    }
+    root = pre;
+  }
+}
+```
+
+#### [199. 二叉树的右视图](https://leetcode-cn.com/problems/binary-tree-right-side-view/)
+
+难度中等482收藏分享切换为英文接收动态反馈
+
+给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+
+**示例:**
+
+```
+输入: [1,2,3,null,5,null,4]
+输出: [1, 3, 4]
+解释:
+
+   1            <---
+ /   \
+2     3         <---
+ \     \
+  5     4       <---
+```
+
+#### [207. 课程表](https://leetcode-cn.com/problems/course-schedule/)
+
+难度中等847收藏分享切换为英文接收动态反馈
+
+你这个学期必须选修 `numCourses` 门课程，记为 `0` 到 `numCourses - 1` 。
+
+在选修某些课程之前需要一些先修课程。 先修课程按数组 `prerequisites` 给出，其中 `prerequisites[i] = [ai, bi]` ，表示如果要学习课程 `ai` 则 **必须** 先学习课程 `bi` 。
+
+- 例如，先修课程对 `[0, 1]` 表示：想要学习课程 `0` ，你需要先完成课程 `1` 。
+
+请你判断是否可能完成所有课程的学习？如果可以，返回 `true` ；否则，返回 `false` 。 
+
+**示例 1：**
+
+```
+输入：numCourses = 2, prerequisites = [[1,0]]
+输出：true
+解释：总共有 2 门课程。学习课程 1 之前，你需要完成课程 0 。这是可能的。
+```
+
+**示例 2：**
+
+```
+输入：numCourses = 2, prerequisites = [[1,0],[0,1]]
+输出：false
+解释：总共有 2 门课程。学习课程 1 之前，你需要先完成课程 0 ；并且学习课程 0 之前，你还应先完成课程 1 。这是不可能的。
+```
+
+
+
 ## 数组 
 
-### <u>简单难度</u>
+### E
 
 #### [53. 最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 
@@ -1471,7 +1122,7 @@ class Solution {
 }
 ```
 
-### <u>中等难度</u>
+### <u>M</u>
 
 #### [11. 盛最多水的容器](https://leetcode-cn.com/problems/container-with-most-water/)
 
@@ -2320,6 +1971,80 @@ public:
 
 ## 栈
 
+### **<u>E</u>**
+
+#### [155. 最小栈](https://leetcode-cn.com/problems/min-stack/)
+
+难度简单934收藏分享切换为英文接收动态反馈
+
+设计一个支持 `push` ，`pop` ，`top` 操作，并能在常数时间内检索到最小元素的栈。
+
+- `push(x)` —— 将元素 x 推入栈中。
+- `pop()` —— 删除栈顶的元素。
+- `top()` —— 获取栈顶元素。
+- `getMin()` —— 检索栈中的最小元素。
+
+**示例:**
+
+```
+输入：
+["MinStack","push","push","push","getMin","pop","top","getMin"]
+[[],[-2],[0],[-3],[],[],[],[]]
+
+输出：
+[null,null,null,null,-3,null,0,-2]
+
+解释：
+MinStack minStack = new MinStack();
+minStack.push(-2);
+minStack.push(0);
+minStack.push(-3);
+minStack.getMin();   --> 返回 -3.
+minStack.pop();
+minStack.top();      --> 返回 0.
+minStack.getMin();   --> 返回 -2.
+```
+
+```Java
+class MinStack {
+    /**
+     * 思想：一个辅助栈，这个栈只放比当前栈顶小的元素，则该辅助栈的栈顶永远最小
+     */
+
+    Stack<Integer> st = new Stack<Integer>();
+    Stack<Integer> min_st = new Stack<Integer>();
+
+    /** initialize your data structure here. */
+    public MinStack() {
+        min_st.push(Integer.MAX_VALUE);   // 先初始一个很大的值放入栈
+    }
+    
+    public void push(int val) {
+        st.push(val);
+        min_st.push(Math.min(min_st.peek(),val));
+    }
+    
+    public void pop() {
+        st.pop();
+        min_st.pop();
+    }
+    
+    public int top() {
+        return st.peek();
+    }
+    
+    public int getMin() {
+        return min_st.peek();
+    }
+}
+```
+
+
+
+
+
+### **<u>M</u>**
+
 #### [150. 逆波兰表达式求值](https://leetcode-cn.com/problems/evaluate-reverse-polish-notation/)
 
 难度中等362收藏分享切换为英文接收动态反馈
@@ -2499,3 +2224,206 @@ public:
 输入：s = "2[abc]3[cd]ef"
 输出："abcabccdcdcdef"
 ```
+
+```CPP
+class Solution {
+public:
+    string decodeString(string s) {
+        string res = "";
+        stack <int> nums;
+        stack <string> strs;
+        int num = 0;
+        int len = s.size();
+        for(int i = 0; i < len; ++ i)
+        {
+            if(s[i] >= '0' && s[i] <= '9')
+            {
+                num = num * 10 + s[i] - '0';
+            }
+            else if((s[i] >= 'a' && s[i] <= 'z') ||(s[i] >= 'A' && s[i] <= 'Z'))
+            {
+                res = res + s[i];
+            }
+            else if(s[i] == '[') //将‘[’前的数字压入nums栈内， 字母字符串压入strs栈内
+            {
+                nums.push(num);
+                num = 0;
+                strs.push(res); 
+                res = "";
+            }
+            else //遇到‘]’时，操作与之相配的‘[’之间的字符，使用分配律
+            {
+                int times = nums.top();
+                nums.pop();
+                for(int j = 0; j < times; ++ j)
+                    strs.top() += res;
+                res = strs.top(); //之后若还是字母，就会直接加到res之后，因为它们是同一级的运算
+                                  //若是左括号，res会被压入strs栈，作为上一层的运算
+                strs.pop();
+            }
+        }
+        return res;
+    }
+};
+```
+
+```Java
+import java.util.*;
+import java.util.Collections;
+class Solution {
+    public String decodeString(String s) {
+        Stack<Integer> st = new Stack<Integer>();
+        StringBuffer ans = new StringBuffer();
+        StringBuffer tmp = new StringBuffer();
+        int len = s.length();
+        String res = null;
+        Integer num = 0;
+        for(int i = 0;i<len;i++){
+            char c = s.charAt(i);
+            // 记录串中数字，用于解码
+            if(c>='0' && c<='9'){   // 数字
+            	String xString = String.valueOf(c);
+                num = num*10 + Integer.parseInt(xString);
+            }
+            // 将字符部分，临时保存起来
+            else if(c>='a'&&c<='z' || c>='A'&&c<='Z'){
+                tmp.append(c);
+            }
+            // 遇到]，说明前面的需要完成解码
+            else if(c == ']'){
+                // 解码
+                while(num > 0){
+                    ans.append(tmp);
+                    num--;
+                }
+                // 初始化
+                num = 0;
+                tmp = new StringBuffer();   // 重新初始化
+            }
+        }
+        return ans.toString();
+    }
+}
+```
+
+
+
+#### [856. 括号的分数](https://leetcode-cn.com/problems/score-of-parentheses/)
+
+难度中等218收藏分享切换为英文接收动态反馈
+
+给定一个平衡括号字符串 `S`，按下述规则计算该字符串的分数：
+
+- `()` 得 1 分。
+- `AB` 得 `A + B` 分，其中 A 和 B 是平衡括号字符串。
+- `(A)` 得 `2 * A` 分，其中 A 是平衡括号字符串。
+
+**示例 1：**
+
+```
+输入： "()"
+输出： 1
+```
+
+**示例 2：**
+
+```
+输入： "(())"
+输出： 2
+```
+
+**示例 3：**
+
+```
+输入： "()()"
+输出： 2
+```
+
+**示例 4：**
+
+```
+输入： "(()(()))"
+输出： 6
+```
+
+```Java
+class Solution {
+    public int scoreOfParentheses(String s) {
+        Stack<Character> st = new Stack<Character>();
+        double ans = 0;
+        for(int i = 0;i<s.length();i++){
+            char c = s.charAt(i);
+            if(c=='('){
+                st.push(c);
+            }else if(c == ')'){
+                if(s.charAt(i-1) == '('){   // 当左边也是(，进行加分
+                    // 注意：pow函数的返回值等问题
+                    ans = ans + Math.pow((double)2,st.size()-1);  
+                }
+                st.pop();
+            }
+        }
+        return (int)ans;
+    }
+}
+```
+
+#### [739. 每日温度](https://leetcode-cn.com/problems/daily-temperatures/)
+
+难度中等789收藏分享切换为英文接收动态反馈
+
+请根据每日 `气温` 列表，重新生成一个列表。对应位置的输出为：要想观测到更高的气温，至少需要等待的天数。如果气温在这之后都不会升高，请在该位置用 `0` 来代替。
+
+例如，给定一个列表 `temperatures = [73, 74, 75, 71, 69, 72, 76, 73]`，你的输出应该是 `[1, 1, 4, 2, 1, 1, 0, 0]`。
+
+**提示：**`气温` 列表长度的范围是 `[1, 30000]`。每个气温的值的均为华氏度，都是在 `[30, 100]` 范围内的整数。
+
+**<u>暴力法   ：  时间复杂度O(n^2)</u>**
+
+```Java
+class Solution {
+    public int[] dailyTemperatures(int[] temperatures) {
+        int len = temperatures.length;
+        int[] ans = new int[len];
+        ans[len-1] = 0;               // 最后一个一定为0
+        for(int i = 0;i<len-1;i++){
+            ans[i] = getLarger(temperatures,i+1,len,temperatures[i]);
+        }
+        return ans;
+    }
+    public int getLarger(int[] a,int start,int len,int targer){
+        for(int i = start;i<len;i++){
+            if(a[i] > targer){
+                return i-start+1;
+            }
+        }
+        return 0;
+    }
+}
+```
+
+**<u>单调栈</u>**
+
+```Java
+class Solution {
+    public int[] dailyTemperatures(int[] temperatures) {
+        /**
+         * 单调栈方法：
+            1. 设置一个栈，它从栈底到栈顶是递减的
+         */
+         int len = temperatures.length;
+         int[] ans = new int[len];
+         Stack<Integer> st = new Stack<Integer>();
+         for(int i = 0;i<len;i++){
+             // 如果发现入栈会破坏递减，说明此时有解
+             while(!st.empty() && temperatures[i]>temperatures[st.peek()]){
+                 int t = st.peek(); st.pop();
+                 ans[t] = i - t; 
+             }
+             st.push(i);  
+         }
+         return ans;
+    }
+}
+```
+
