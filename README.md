@@ -564,6 +564,63 @@ class Solution {
 
 ### **<u>E</u>**
 
+#### [226. 翻转二叉树](https://leetcode-cn.com/problems/invert-binary-tree/)
+
+难度简单892收藏分享切换为英文接收动态反馈
+
+翻转一棵二叉树。
+
+**示例：**
+
+输入：
+
+```
+     4
+   /   \
+  2     7
+ / \   / \
+1   3 6   9
+```
+
+输出：
+
+```
+     4
+   /   \
+  7     2
+ / \   / \
+9   6 3   1
+```
+
+```Java
+/**
+ * 层次遍历；每一层进行翻转
+ */
+class Solution {
+    public TreeNode invertTree(TreeNode root) {
+        Queue<TreeNode> q = new LinkedList<TreeNode>();
+        if(root == null)
+            return root;
+        q.offer(root);       // 根入队
+        while(!q.isEmpty()){
+            TreeNode tmp = q.poll();
+            // 交换
+            TreeNode t = tmp.left;
+            tmp.left = tmp.right;
+            tmp.right = t;
+            // 同一层其它结点
+            if(tmp.left!=null){
+                q.offer(tmp.left);
+            }
+            if(tmp.right!=null){
+                q.offer(tmp.right);
+            }
+        }
+        return root;
+    }
+}
+```
+
 #### [104. 二叉树的最大深度](https://leetcode-cn.com/problems/maximum-depth-of-binary-tree/)
 
 难度简单902收藏分享切换为英文接收动态反馈
@@ -863,6 +920,259 @@ class Solution {
 输入：numCourses = 2, prerequisites = [[1,0],[0,1]]
 输出：false
 解释：总共有 2 门课程。学习课程 1 之前，你需要先完成课程 0 ；并且学习课程 0 之前，你还应先完成课程 1 。这是不可能的。
+```
+
+#### [剑指 Offer 12. 矩阵中的路径](https://leetcode-cn.com/problems/ju-zhen-zhong-de-lu-jing-lcof/)
+
+难度中等341收藏分享切换为英文接收动态反馈
+
+给定一个 `m x n` 二维字符网格 `board` 和一个字符串单词 `word` 。如果 `word` 存在于网格中，返回 `true` ；否则，返回 `false` 。
+
+单词必须按照字母顺序，通过相邻的单元格内的字母构成，其中“相邻”单元格是那些水平相邻或垂直相邻的单元格。同一个单元格内的字母不允许被重复使用。
+
+例如，在下面的 3×4 的矩阵中包含单词 "ABCCED"（单词中的字母已标出）。
+
+<img src="markdownImages/wor.jpg" alt="img" style="zoom:50%;" />
+
+ 
+
+**示例 1：**
+
+```
+输入：board = [["A","B","C","E"],["S","F","C","S"],["A","D","E","E"]], word = "ABCCED"
+输出：true
+```
+
+**示例 2：**
+
+```
+输入：board = [["a","b"],["c","d"]], word = "abcd"
+输出：false
+```
+
+```Java
+// 回溯
+class Solution {
+public:
+    bool exist(vector<vector<char>>& board, string word) {
+        int rows = board.size();
+        int  cols = board[0].size();
+        for(int i = 0; i < rows; i++) {
+            for(int j = 0; j < cols; j++) {
+                if(DFS(board, word, i, j, 0)) 
+                    return true;
+            }
+        }
+        return false;
+    }
+    
+    // x:当前位置x坐标  y:当前位置y坐标   k:当前word[k]
+    bool DFS(vector<vector<char>>& board,string word,int x,int y,int k) 
+    {
+        int rows = board.size();
+        int  cols = board[0].size();
+        if(x >= rows || x < 0 || y >= cols || y < 0 || board[x][y] != word[k]) 
+            return false;
+        board[x][y] = '\0';     // 进行访问，标记已经访问过
+        if(k == word.size()-1)
+            return true;
+        // 深度优先搜索
+        bool res =  (DFS(board,word,x-1,y,k+1)||
+                    DFS(board,word,x+1,y,k+1)||
+                    DFS(board,word,x,y-1,k+1)||
+                    DFS(board,word,x,y+1,k+1));
+        // 回溯
+        board[x][y] = word[k];
+        return res;
+    }
+};
+```
+
+#### [剑指 Offer 34. 二叉树中和为某一值的路径](https://leetcode-cn.com/problems/er-cha-shu-zhong-he-wei-mou-yi-zhi-de-lu-jing-lcof/)
+
+难度中等194收藏分享切换为英文接收动态反馈
+
+输入一棵二叉树和一个整数，打印出二叉树中节点值的和为输入整数的所有路径。从树的<u>根节点</u>开始往下一直到<u>叶节点</u>所经过的节点形成一条路径。
+
+**示例:**
+给定如下二叉树，以及目标和 `target = 22`，
+
+```
+              5
+             / \
+            4   8
+           /   / \
+          11  13  4
+         /  \    / \
+        7    2  5   1
+```
+
+返回:
+
+```
+[
+   [5,4,11,2],
+   [5,8,4,5]
+]
+```
+
+```Java
+class Solution {
+    List<Integer> onePath = new ArrayList<Integer>();
+    List<List<Integer>> allPath = new ArrayList<List<Integer>>();
+    public List<List<Integer>> pathSum(TreeNode root, int target) {
+        DFS(root,target);
+        return allPath;
+    }
+    public void DFS(TreeNode root, int target){
+        // 边界条件
+        if(root==null)
+            return ;
+        onePath.add(root.val);   // 假设加入路径
+        target = target - root.val;
+        if(target==0 && root.left==null && root.right==null) // 满足条件的叶子 路径
+        {
+            allPath.add(new ArrayList(onePath));
+        }
+        // 深度优先搜索
+        DFS(root.left,target);
+        DFS(root.right,target);
+        // 回溯
+        onePath.remove(onePath.size()-1);
+    }
+}
+```
+
+#### [200. 岛屿数量](https://leetcode-cn.com/problems/number-of-islands/)
+
+难度中等1206收藏分享切换为英文接收动态反馈
+
+给你一个由 `'1'`（陆地）和 `'0'`（水）组成的的二维网格，请你计算网格中岛屿的数量。
+
+岛屿总是被水包围，并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。
+
+此外，你可以假设该网格的四条边均被水包围。
+
+**示例 1：**
+
+```
+输入：grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+输出：1
+```
+
+**示例 2：**
+
+```
+输入：grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+输出：3
+```
+
+```Java
+// Java回溯方法
+class Solution {
+    public int numIslands(char[][] grid) {
+        int row = grid.length;
+        int column = grid[0].length;
+        int ans = 0;
+        for(int i = 0;i<row;i++)
+            for(int j = 0;j<column;j++){
+                if(grid[i][j] == '1'){    //对于陆地部分
+                    ans++;
+                    DFS(grid,i,j);
+                }
+            }
+        return ans;
+    }
+    public void DFS(char[][]grid,int x,int y){
+        int row = grid.length;
+        int column = grid[0].length;
+        // 边界情况
+        if(x<0 || x >=row || y<0 || y>=column || grid[x][y]!='1' ){
+            return ;  // 超出边界 、 不是陆地
+        }
+        grid[x][y] = '2';
+        // 深度搜索
+        DFS(grid,x+1,y);
+        DFS(grid,x-1,y);
+        DFS(grid,x,y-1);
+        DFS(grid,x,y+1);
+    }
+}
+```
+
+#### [695. 岛屿的最大面积](https://leetcode-cn.com/problems/max-area-of-island/)
+
+难度中等502收藏分享切换为英文接收动态反馈
+
+给定一个包含了一些 `0` 和 `1` 的非空二维数组 `grid` 。
+
+一个 **岛屿** 是由一些相邻的 `1` (代表土地) 构成的组合，这里的「相邻」要求两个 `1` 必须在水平或者竖直方向上相邻。你可以假设 `grid` 的四个边缘都被 `0`（代表水）包围着。
+
+找到给定的二维数组中最大的岛屿面积。(如果没有岛屿，则返回面积为 `0` 。)
+
+**示例 1:**
+
+```
+[[0,0,1,0,0,0,0,1,0,0,0,0,0],
+ [0,0,0,0,0,0,0,1,1,1,0,0,0],
+ [0,1,1,0,1,0,0,0,0,0,0,0,0],
+ [0,1,0,0,1,1,0,0,1,0,1,0,0],
+ [0,1,0,0,1,1,0,0,1,1,1,0,0],
+ [0,0,0,0,0,0,0,0,0,0,1,0,0],
+ [0,0,0,0,0,0,0,1,1,1,0,0,0],
+ [0,0,0,0,0,0,0,1,1,0,0,0,0]]
+```
+
+对于上面这个给定矩阵应返回 `6`。注意答案不应该是 `11` ，因为岛屿只能包含水平或垂直的四个方向的 `1` 。
+
+**示例 2:**
+
+```
+[[0,0,0,0,0,0,0,0]]
+```
+
+对于上面这个给定的矩阵, 返回 `0`。
+
+```Java
+// Java回溯
+class Solution {
+    public int maxAreaOfIsland(int[][] grid){
+        int row = grid.length;
+        int column = grid[0].length;
+        int ans = 0;
+        for(int i = 0;i<row;i++)
+            for(int j = 0;j<column;j++){
+                if(grid[i][j] == 1){    //对于陆地部分                    
+                   ans = Math.max(ans,DFS(grid,i,j));
+                }
+            }
+        return ans;
+    }
+    public int DFS(int[][]grid,int x,int y){
+        int row = grid.length;
+        int column = grid[0].length;
+        // 边界情况
+        if(x<0 || x >=row || y<0 || y>=column || grid[x][y]!=1 ){
+            return 0;  // 超出边界 、 不是陆地
+        }
+        grid[x][y] = 2;
+        // 深度搜索
+        return DFS(grid,x+1,y)+   // 某一个1周围都是海洋或者边界，则面积+1
+               DFS(grid,x-1,y)+
+               DFS(grid,x,y-1)+
+               DFS(grid,x,y+1)+1;
+    }
+}
 ```
 
 
