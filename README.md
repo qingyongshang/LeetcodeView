@@ -3,19 +3,27 @@
     - [5. 最长回文子串](#5-最长回文子串)
     - [20. 有效的括号](#20-有效的括号)
     - [49. 字母异位词分组](#49-字母异位词分组)
+    - [139. 单词拆分](#139-单词拆分)
     - [647. 回文子串](#647-回文子串)
     - [1249. 移除无效的括号](#1249-移除无效的括号)
     - [面试题 01.06. 字符串压缩](#面试题-0106-字符串压缩)
+    - [567. 字符串的排列](#567-字符串的排列)
     - [1544. 整理字符串](#1544-整理字符串)
     - [面试题 08.09. 括号](#面试题-0809-括号)
+    - [227. 基本计算器 II](#227-基本计算器-ii)
 - [深度优先](#深度优先)
   - [**<u>E</u>**](#ueu)
+    - [226. 翻转二叉树](#226-翻转二叉树)
     - [104. 二叉树的最大深度](#104-二叉树的最大深度)
     - [101. 对称二叉树](#101-对称二叉树)
   - [**<u>M</u>**](#umu)
     - [114. 二叉树展开为链表](#114-二叉树展开为链表)
     - [199. 二叉树的右视图](#199-二叉树的右视图)
     - [207. 课程表](#207-课程表)
+    - [剑指 Offer 12. 矩阵中的路径](#剑指-offer-12-矩阵中的路径)
+    - [剑指 Offer 34. 二叉树中和为某一值的路径](#剑指-offer-34-二叉树中和为某一值的路径)
+    - [200. 岛屿数量](#200-岛屿数量)
+    - [695. 岛屿的最大面积](#695-岛屿的最大面积)
 - [数组](#数组)
   - [E](#e)
     - [53. 最大子序和](#53-最大子序和)
@@ -44,11 +52,14 @@
     - [155. 最小栈](#155-最小栈)
   - [**<u>M</u>**](#umu-2)
     - [150. 逆波兰表达式求值](#150-逆波兰表达式求值)
-    - [227. 基本计算器 II](#227-基本计算器-ii)
+    - [227. 基本计算器 II](#227-基本计算器-ii-1)
     - [394. 字符串解码](#394-字符串解码)
     - [856. 括号的分数](#856-括号的分数)
     - [739. 每日温度](#739-每日温度)
-
+- [排序](#排序)
+- [链表](#链表)
+    - [21. 合并两个有序链表](#21-合并两个有序链表)
+    - [19. 删除链表的倒数第 N 个结点](#19-删除链表的倒数第-n-个结点)
 ## 字符串
 
 #### [3. 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
@@ -282,6 +293,104 @@ class Solution {
 ]
 ```
 
+```Java
+// 排序 + 哈希
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+    HashMap<String, List<String>> hash = new HashMap<>();
+    for (int i = 0; i < strs.length; i++) {
+        char[] s_arr = strs[i].toCharArray(); // 转成char[]
+        //排序
+        Arrays.sort(s_arr);                   // 排序
+        //映射到 key
+        String key = String.valueOf(s_arr);   // 转成string类型
+        //添加到对应的类中
+        if (hash.containsKey(key)) {          // 如果排序后的字符串以前有一样的
+            hash.get(key).add(strs[i]);       // 先找到那个，然后添加进去
+        } else {                              // 第一次出现
+            List<String> temp = new ArrayList<String>();  // 新建一个List
+            temp.add(strs[i]);                 
+            hash.put(key, temp);
+        }
+    }
+    return new ArrayList<List<String>>(hash.values());// 将hashMap中的值Value放入List
+  }
+}
+```
+
+#### [139. 单词拆分](https://leetcode-cn.com/problems/word-break/)
+
+难度中等1033收藏分享切换为英文接收动态反馈
+
+给定一个**非空**字符串 *s* 和一个包含**非空**单词的列表 *wordDict*，判定 *s* 是否可以被空格拆分为一个或多个在字典中出现的单词。
+
+**说明：**
+
+- 拆分时可以重复使用字典中的单词。
+- 你可以假设字典中没有重复的单词。
+
+**示例 1：**
+
+```
+输入: s = "leetcode", wordDict = ["leet", "code"]
+输出: true
+解释: 返回 true 因为 "leetcode" 可以被拆分成 "leet code"。
+```
+
+**示例 2：**
+
+```
+输入: s = "applepenapple", wordDict = ["apple", "pen"]
+输出: true
+解释: 返回 true 因为 "applepenapple" 可以被拆分成 "apple pen apple"。
+     注意你可以重复使用字典中的单词。
+```
+
+**示例 3：**
+
+```
+输入: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+输出: false
+```
+
+**<u>背包问题：https://leetcode-cn.com/problems/word-break/solution/yi-tao-kuang-jia-jie-jue-bei-bao-wen-ti-kchg9/</u>**
+
+```Java
+class Solution {
+public:
+   string slice(string s ,int m,int n)
+{
+	string tmp= "";
+	for(int i = m;i<=n;i++)
+		tmp.push_back(s[i]);
+	return tmp;
+}
+bool wordBreak(string s, vector<string>& wordDict)
+{
+	int n = s.size();
+	 bool *dp = (bool*)malloc(sizeof(bool)*(n+1));  //dp数组
+    //bool dp[n+1] ;
+	for(int i=0;i<=n;i++)
+		dp[i] = false;
+	dp[0] = true;  // 边界条件
+	for(int i = 1;i<=n;i++){	// dp数组的赋值
+		for(int j=i-1;j>=0;j--){
+			string split = slice(s,j,i-1);  // 后缀部分s[j:i-1]
+			auto res = find(wordDict.begin(), wordDict.end(),split); //查找leet
+			if(res!=wordDict.end() && dp[j])
+			{
+				dp[i] = true;
+				break;
+			}
+		}
+	}
+	return dp[n];
+  }
+};
+```
+
+
+
 #### [647. 回文子串](https://leetcode-cn.com/problems/palindromic-substrings/)
 
 难度中等611收藏分享切换为英文接收动态反馈
@@ -470,6 +579,39 @@ class Solution {
 }
 ```
 
+#### [567. 字符串的排列](https://leetcode-cn.com/problems/permutation-in-string/)
+
+难度中等368收藏分享切换为英文接收动态反馈
+
+给定两个字符串 `s1` 和 `s2`，写一个函数来判断 `s2` 是否包含 `s1` 的排列。
+
+换句话说，第一个字符串的排列之一是第二个字符串的 **子串** 。
+
+**示例 1：**
+
+```
+输入: s1 = "ab" s2 = "eidbaooo"
+输出: True
+解释: s2 包含 s1 的排列之一 ("ba").
+```
+
+**示例 2：**
+
+```
+输入: s1= "ab" s2 = "eidboaoo"
+输出: False
+```
+
+```Java
+/**
+ * 思路：先求取字符串的排列，存在一个List中
+  然后使用indecOf()函数进行查找
+ *
+ */
+```
+
+
+
 #### [1544. 整理字符串](https://leetcode-cn.com/problems/make-the-string-great/)
 
 难度简单27收藏分享切换为英文接收动态反馈
@@ -559,6 +701,122 @@ class Solution {
   "()()()"
 ]
 ```
+
+```Java
+参考：
+https://leetcode-cn.com/problems/bracket-lcci/solution/shu-ju-jie-gou-he-suan-fa-di-gui-he-dong-8ywv/    
+
+	public List<String> generateParenthesis(int n) {
+        List<String> res = new ArrayList<>();
+        dfs(res, n, n, "");
+        return res;
+    }
+
+    private void dfs(List<String> res, int left, int right, String curStr) {
+        if (left == 0 && right == 0) { // 左右括号都不剩余了，说明找到了有效的括号
+            res.add(curStr);
+            return;
+        }
+        //左括号只有剩余的时候才可以选，如果左括号的数量已经选完了，是不能再选左括号了。
+        //如果选完了左括号我们是还可以选择右括号的。
+        if (left < 0)
+            return;
+        // 如果右括号剩余数量小于左括号剩余的数量，说明之前选择的无效
+        if (right < left)
+            return;
+        //选择左括号
+        dfs(res, left - 1, right, curStr + "(");
+        //选择右括号
+        dfs(res, left, right - 1, curStr + ")");
+    }
+```
+
+#### [227. 基本计算器 II](https://leetcode-cn.com/problems/basic-calculator-ii/)
+
+难度中等410收藏分享切换为英文接收动态反馈
+
+给你一个字符串表达式 `s` ，请你实现一个基本计算器来计算并返回它的值。
+
+整数除法仅保留整数部分。
+
+**示例 1：**
+
+```
+输入：s = "3+2*2"
+输出：7
+```
+
+**示例 2：**
+
+```
+输入：s = " 3/2 "
+输出：1
+```
+
+**示例 3：**
+
+```
+输入：s = " 3+5 / 2 "
+输出：5
+```
+
+```Java
+// 栈
+class Solution {
+    public int calculate(String s) {
+        System.out.println(s);
+        Stack<Integer> st = new Stack<>();
+        st.push(0);
+        int len = s.length();
+        int num = 0;
+        char sign = '+';
+        int i = 0;
+        while(i<len){
+            char c = s.charAt(i);
+            if(c==' ')
+                i++;
+            else if(c == '+' || c=='-' || c=='*' || c=='/'){
+                sign = c;
+                i++;
+            }else{
+                c = s.charAt(i);
+                while(i<len && Character.isDigit(c)){
+                    c = s.charAt(i);
+                    String ss = String.valueOf(c);
+                    int tmp = Integer.parseInt(ss);
+                    num = num*10 + tmp;
+                    i++;
+                }
+                if(sign=='+'){
+                    st.push(num);
+                    num = 0;
+                }else if(sign=='-'){
+                    num = 0-num;
+                    st.push(num);
+                    num = 0;
+                }else if(sign=='*'){
+                    int x = st.pop();
+                    int xx = x * num;
+                    st.push(xx);
+                    num = 0;
+                }else if(sign == '/'){
+                    int x = st.pop();
+                    int xx = x / num;
+                    st.push(xx);
+                    num = 0;
+                }
+            }
+        }
+        int ans = 0;
+        while(!st.empty()){
+            ans = ans + st.pop();
+        }
+        return ans ;
+    }
+}
+```
+
+
 
 ## 深度优先
 
@@ -2733,6 +2991,115 @@ class Solution {
              st.push(i);  
          }
          return ans;
+    }
+}
+```
+
+## 排序
+
+## 链表
+
+#### [21. 合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+
+难度简单1765收藏分享切换为英文接收动态反馈
+
+将两个升序链表合并为一个新的 **升序** 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+
+**示例 1：**
+
+<img src="markdownImages/merge_ex1.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：l1 = [1,2,4], l2 = [1,3,4]
+输出：[1,1,2,3,4,4]
+```
+
+**示例 2：**
+
+```
+输入：l1 = [], l2 = []
+输出：[]
+```
+
+```Java
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        // 递归
+        if(l1 == null)
+            return l2;
+        if(l2 == null)
+            return l1;
+        if(l1.val <= l2.val)  // 如果l1有小于l2的
+        {
+            l1.next = mergeTwoLists(l1.next,l2);
+            return l1;
+        }
+        else
+        {
+            l2.next = mergeTwoLists(l2.next,l1);
+            return l2;
+        }
+    }
+}
+```
+
+#### [19. 删除链表的倒数第 N 个结点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
+
+难度中等1421收藏分享切换为英文接收动态反馈
+
+给你一个链表，删除链表的倒数第 `n` 个结点，并且返回链表的头结点。
+
+**进阶：**你能尝试使用一趟扫描实现吗？
+
+**示例 1：**
+
+<img src="markdownImages/remove_ex1.jpg" alt="img" style="zoom:50%;" />
+
+```
+输入：head = [1,2,3,4,5], n = 2
+输出：[1,2,3,5]
+```
+
+**示例 2：**
+
+```
+输入：head = [1], n = 1
+输出：[]
+```
+
+```Java
+class Solution {
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        if(head == null)
+            return null;
+        ListNode p = head;
+        while(n>0){
+            p = p.next;
+            n--;
+        }
+        if(p!=null){
+            ListNode q = head;
+            while(p.next!=null){
+                p = p.next;
+                q= q.next;
+            }
+            ListNode x= q.next;
+            q.next = x.next;
+        }
+        else{
+            head = head.next;
+        }
+        return head;
     }
 }
 ```
