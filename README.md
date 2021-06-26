@@ -60,6 +60,22 @@
 - [链表](#链表)
     - [21. 合并两个有序链表](#21-合并两个有序链表)
     - [19. 删除链表的倒数第 N 个结点](#19-删除链表的倒数第-n-个结点)
+- [数学](#数学)
+    - [求一个数的所有因子](#求一个数的所有因子)
+    - [求质数](#求质数)
+    - [求组合数](#求组合数)
+    - [求排列数](#求排列数)
+    - [求子集](#求子集)
+    - [求集合的排列](#求集合的排列)
+    - [全排列](#全排列)
+    - [求集合的组合](#求集合的组合)
+    - [最大公因数](#最大公因数)
+    - [最小公倍数](#最小公倍数)
+    - [整数分化问题](#整数分化问题)
+    - [正整数用2的幂次方表示](#正整数用2的幂次方表示)
+    - [找出n个自然数(1,2,3,…,n)中r个数的组合](#找出n个自然数123n中r个数的组合)
+    - [从n个任意数中，取出r个数的组合。](#从n个任意数中取出r个数的组合)
+    - [求幂数](#求幂数)
 ## 字符串
 
 #### [3. 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
@@ -3103,4 +3119,91 @@ class Solution {
     }
 }
 ```
+
+## 数学
+
+#### 求一个数的所有因子
+
+因子：整数a除以整数b(b≠0) 的商正好是整数而没有余数，我们就说b是a的因子。0不是0的因子。
+
+```Java
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner; 
+public class Test {
+    public static void main(String[] args) {
+        int m;
+        System.out.println("请输入一个整数：");
+        Scanner s = new Scanner(System.in);
+        m = s.nextInt();
+        List<Integer> res = gene(m);
+        System.out.println(res);
+    }
+    //函数 gene
+    public static List<Integer> gene(int a) {
+    	List<Integer> ans = new ArrayList<Integer>();
+        for (int i = 1; i <= a; i++) {
+            if (a%i== 0) {
+                ans.add(i);
+            }
+        }
+        return ans;     
+    }
+}
+```
+
+#### 求质数
+
+#### 求组合数
+
+#### 求排列数
+
+#### 求子集
+
+#### 求集合的排列
+
+#### 全排列
+
+#### 求集合的组合
+
+#### 最大公因数
+
+#### 最小公倍数
+
+#### [整数分化问题](https://blog.csdn.net/huang1600301017/article/details/81022489)
+
+#### 正整数用2的幂次方表示
+
+<img src="../gitbook/markdownImages/image-20210626194600213.png" alt="image-20210626194600213" style="zoom:50%;" />
+
+```Cpp
+#include <iostream>
+using namespace std;
+void f_myfun(int n,int r)
+{
+  	  if(n==1)
+  	    printf("2(%d)",r);
+  	  else
+	    {
+	    	f_myfun(n/2,r+1);
+	    	if(n%2==1)
+	    	  printf("+2(%d)",r);
+		}
+}
+int main()
+{
+	int n,res;
+	printf("n=");scanf("%d",&n);
+	printf("%d=",n);
+    f_myfun(n,0);
+	system("pause");
+    return 0;
+}
+```
+
+#### 找出n个自然数(1,2,3,…,n)中r个数的组合
+
+#### 从n个任意数中，取出r个数的组合。
+
+#### 求幂数
 
